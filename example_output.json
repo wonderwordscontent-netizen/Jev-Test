@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "total_reviews_analyzed": 3,
+    "likely_fake_reviews": 2,
+    "likely_fake_percentage": 66.7,
+    "suspicious_reviews": 2,
+    "average_confidence": 0.86
+  },
+  "dimension_analysis": {
+    "language_authenticity": {
+      "avg_score": 52,
+      "count": 3,
+      "high_suspicion_count": 1
+    },
+    "rating_text_alignment": {
+      "avg_score": 33,
+      "count": 3,
+      "high_suspicion_count": 0
+    },
+    "reviewer_authenticity": {
+      "avg_score": 45,
+      "count": 3,
+      "high_suspicion_count": 1
+    },
+    "specific_detail_level": {
+      "avg_score": 30,
+      "count": 3,
+      "high_suspicion_count": 1
+    },
+    "common_spam_phrases": {
+      "avg_score": 35,
+      "count": 3,
+      "high_suspicion_count": 1
+    }
+  },
+  "detailed_results": [
+    {
+      "review_id": "review_003",
+      "suspicion_score": 72,
+      "confidence": 0.89,
+      "is_likely_fake": true,
+      "days_since_review": 2,
+      "dimensions": [
+        {
+          "dimension": "language_authenticity",
+          "score": 85,
+          "confidence": 0.92,
+          "evidence": "Generic promotional language, call-to-action phrases detected"
+        },
+        {
+          "dimension": "rating_text_alignment",
+          "score": 20,
+          "confidence": 0.88,
+          "evidence": "5-star rating clearly matches positive language in text"
+        },
+        {
+          "dimension": "reviewer_authenticity",
+          "score": 75,
+          "confidence": 0.85,
+          "evidence": "Brand new account (5 days old), all 5-star ratings, only 3 reviews total"
+        },
+        {
+          "dimension": "specific_detail_level",
+          "score": 60,
+          "confidence": 0.91,
+          "evidence": "No specific details provided; generic praise without context"
+        },
+        {
+          "dimension": "common_spam_phrases",
+          "score": 70,
+          "confidence": 0.90,
+          "evidence": "Contains 'MUST VISIT', promo code reference, urgency language"
+        }
+      ]
+    },
+    {
+      "review_id": "review_001",
+      "suspicion_score": 64,
+      "confidence": 0.83,
+      "is_likely_fake": true,
+      "days_since_review": 1,
+      "dimensions": [
+        {
+          "dimension": "language_authenticity",
+          "score": 75,
+          "confidence": 0.87,
+          "evidence": "Very generic phrasing, could be templated response"
+        },
+        {
+          "dimension": "rating_text_alignment",
+          "score": 10,
+          "confidence": 0.90,
+          "evidence": "5-star rating perfectly matches enthusiastic text"
+        },
+        {
+          "dimension": "reviewer_authenticity",
+          "score": 80,
+          "confidence": 0.81,
+          "evidence": "Very new account (2 days old), single review at maximum rating, no review history"
+        },
+        {
+          "dimension": "specific_detail_level",
+          "score": 60,
+          "confidence": 0.88,
+          "evidence": "Completely generic, no verifiable details about visit"
+        },
+        {
+          "dimension": "common_spam_phrases",
+          "score": 20,
+          "confidence": 0.85,
+          "evidence": "No obvious spam phrases or promotional language"
+        }
+      ]
+    },
+    {
+      "review_id": "review_002",
+      "suspicion_score": 28,
+      "confidence": 0.88,
+      "is_likely_fake": false,
+      "days_since_review": 3,
+      "dimensions": [
+        {
+          "dimension": "language_authenticity",
+          "score": 15,
+          "confidence": 0.91,
+          "evidence": "Natural, specific phrasing with detailed descriptions of experience"
+        },
+        {
+          "dimension": "rating_text_alignment",
+          "score": 30,
+          "confidence": 0.86,
+          "evidence": "5-star rating well-aligned with specific positive comments about service"
+        },
+        {
+          "dimension": "reviewer_authenticity",
+          "score": 20,
+          "confidence": 0.87,
+          "evidence": "Established account (1250 days old), 47 total reviews with realistic rating distribution (avg 4.1)"
+        },
+        {
+          "dimension": "specific_detail_level",
+          "score": 0,
+          "confidence": 0.93,
+          "evidence": "Multiple specific details: grilled salmon preparation, staff member name (Sarah), timing info"
+        },
+        {
+          "dimension": "common_spam_phrases",
+          "score": 0,
+          "confidence": 0.89,
+          "evidence": "No promotional or spam language detected"
+        }
+      ]
+    }
+  ]
+}

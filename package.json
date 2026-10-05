@@ -1,0 +1,29 @@
+{
+  "name": "typesafe-review-analyzer",
+  "version": "1.0.0",
+  "description": "Detect fake Google Maps reviews using TypeSafe/Jev",
+  "main": "review-analyzer.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx review-analyzer.ts",
+    "build": "tsc",
+    "analyze": "tsx review-analyzer.ts"
+  },
+  "keywords": [
+    "typesafe",
+    "jev",
+    "review-analysis",
+    "fake-detection",
+    "google-maps"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@typesafe-ai/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}
