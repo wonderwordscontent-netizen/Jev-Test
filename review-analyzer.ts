@@ -5,11 +5,11 @@
  * and detect fake/spammy content using composite scoring of multiple indicators.
  */
 
-import { TypeSafeClient, Question, Score, Noul } from "@typesafe-ai/sdk";
+import fetch from "node-fetch";
 
-// Configuration
-const TYPESAFE_API_KEY = process.env.TYPESAFE_API_KEY || "";
-const client = new TypeSafeClient({ apiKey: TYPESAFE_API_KEY });
+// Configuration - Using BeatAPI hosted TypeSafe endpoint
+const BEATAPI_API_URL = "https://api.beatapi.io/v1/systemone";
+const BEATAPI_API_KEY = process.env.BEATAPI_API_KEY || "";
 
 // Type definitions
 interface ReviewerProfile {
@@ -170,20 +170,43 @@ async function analyzeReview(
   const questions = buildAnalysisQuestions();
 
   try {
-    // Call TypeSafe API - questions run in parallel
-    const response = await client.analyze({
-      model: "jev-1.0",
-      state,
-      questions,
+    // Convert questions array to dict format expected by BeatAPI
+    const questionsDict: Record<string, any> = {};
+    for (const q of questions) {
+      questionsDict[q.id] = {
+        type: q.type,
+        instructions: q.instructions,
+        criteria: q.criteria,
+      };
+    }
+
+    // Call BeatAPI hosted TypeSafe endpoint
+    const response = await fetch(BEATAPI_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${BEATAPI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "jev-1.13-free",
+        state,
+        questions: questionsDict,
+      }),
     });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.statusText}`);
+    }
+
+    const responseData = (await response.json()) as Record<string, any>;
 
     const dimensions: SuspicionDimension[] = [];
     const scores: number[] = [];
     const confidences: number[] = [];
 
     // Process language authenticity (Score)
-    if (response.language_authenticity) {
-      const result = response.language_authenticity;
+    if (responseData.language_authenticity) {
+      const result = responseData.language_authenticity;
       const suspicion = (result.level || 2) * 20; // Map to 0-100
       dimensions.push({
         dimension: "language_authenticity",
@@ -196,8 +219,8 @@ async function analyzeReview(
     }
 
     // Process rating-text alignment
-    if (response.rating_text_alignment) {
-      const result = response.rating_text_alignment;
+    if (responseData.rating_text_alignment) {
+      const result = responseData.rating_text_alignment;
       const suspicion = (5 - (result.level || 2)) * 20; // Invert: good alignment = low suspicion
       dimensions.push({
         dimension: "rating_text_alignment",
@@ -210,8 +233,8 @@ async function analyzeReview(
     }
 
     // Process reviewer authenticity
-    if (response.reviewer_authenticity) {
-      const result = response.reviewer_authenticity;
+    if (responseData.reviewer_authenticity) {
+      const result = responseData.reviewer_authenticity;
       const suspicion = (result.level || 2) * 20;
       dimensions.push({
         dimension: "reviewer_authenticity",
@@ -224,8 +247,8 @@ async function analyzeReview(
     }
 
     // Process specific detail level (Noul)
-    if (response.specific_detail_level) {
-      const result = response.specific_detail_level;
+    if (responseData.specific_detail_level) {
+      const result = responseData.specific_detail_level;
       const suspicion = result.value === "yes" ? 0 : 60;
       dimensions.push({
         dimension: "specific_detail_level",
@@ -241,8 +264,8 @@ async function analyzeReview(
     }
 
     // Process common spam phrases (Noul)
-    if (response.common_spam_phrases) {
-      const result = response.common_spam_phrases;
+    if (responseData.common_spam_phrases) {
+      const result = responseData.common_spam_phrases;
       const suspicion = result.value === "yes" ? 70 : 0;
       dimensions.push({
         dimension: "common_spam_phrases",

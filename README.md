@@ -53,6 +53,12 @@ The model returns confidence for each judgment:
 
 ## Setup
 
+### Get an API Key
+
+1. Sign up for a free BeatAPI account at https://beatapi.io
+2. Get your `BEATAPI_API_KEY` from the dashboard
+3. The `jev-1.13-free` model is included with the free tier
+
 ### Python Installation
 
 ```bash
@@ -61,7 +67,7 @@ pip install -r requirements.txt
 
 Set environment variable:
 ```bash
-export TYPESAFE_API_KEY="your_api_key_here"
+export BEATAPI_API_KEY="your_api_key_here"
 ```
 
 ### TypeScript/Node Installation
@@ -72,7 +78,7 @@ npm install
 
 Set environment variable:
 ```bash
-export TYPESAFE_API_KEY="your_api_key_here"
+export BEATAPI_API_KEY="your_api_key_here"
 ```
 
 ## Usage

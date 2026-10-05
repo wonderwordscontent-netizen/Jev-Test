@@ -18,8 +18,9 @@ import requests
 
 
 # TypeSafe API Configuration
-TYPESAFE_API_URL = "https://api.typesafe.ai/v1"
-TYPESAFE_API_KEY = "${TYPESAFE_API_KEY}"  # Set via environment
+# Using BeatAPI hosted TypeSafe endpoint
+TYPESAFE_API_URL = "https://api.beatapi.io/v1/systemone"
+TYPESAFE_API_KEY = "${BEATAPI_API_KEY}"  # Set via environment
 
 # Review data structures
 class ReviewMetadata(TypedDict):
@@ -156,10 +157,17 @@ def call_typesafe_api(review: Review) -> dict:
     state = build_review_state(review)
     questions = build_analysis_questions()
 
+    # Convert questions list to dict format expected by BeatAPI
+    questions_dict = {q["id"]: {
+        "type": q["type"],
+        "instructions": q["instructions"],
+        "criteria": q["criteria"]
+    } for q in questions}
+
     payload = {
-        "model": "jev-1.0",
+        "model": "jev-1.13-free",
         "state": state,
-        "questions": questions
+        "questions": questions_dict
     }
 
     headers = {
@@ -168,7 +176,7 @@ def call_typesafe_api(review: Review) -> dict:
     }
 
     response = requests.post(
-        f"{TYPESAFE_API_URL}/analyze",
+        TYPESAFE_API_URL,
         json=payload,
         headers=headers,
         timeout=30
