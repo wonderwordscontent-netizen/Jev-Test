@@ -262,10 +262,13 @@ def parse_manual_reviews(text: str) -> list:
         parsed = parse_review_text(line)
         if parsed:
             review_date = datetime.now() - timedelta(days=parsed.get('days_since', 0))
+            rating = parsed.get('rating') or 5
+            if rating is None:
+                rating = 5
 
             reviews.append({
                 "id": f"manual_{i+1}",
-                "rating": parsed.get('rating', 5),
+                "rating": rating,
                 "text": parsed.get('text', line),
                 "metadata": {
                     "reviewer_name": parsed.get('reviewer_name', f"Reviewer {i+1}"),
@@ -273,7 +276,7 @@ def parse_manual_reviews(text: str) -> list:
                     "review_date": review_date.isoformat(),
                     "days_since_review": parsed.get('days_since', 0),
                     "reviewer_review_count": 1,
-                    "reviewer_avg_rating": float(parsed.get('rating', 5)),
+                    "reviewer_avg_rating": float(rating),
                 }
             })
 
