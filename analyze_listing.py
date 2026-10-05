@@ -55,9 +55,27 @@ try:
     time.sleep(5)
 
     print("📜 Scrolling to load more reviews...")
-    for i in range(8):
-        driver.execute_script("window.scrollBy(0, 800)")
-        time.sleep(1.5)
+    print("   (This may take 30-60 seconds for large listings)\n")
+
+    # Scroll more aggressively to load more reviews
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    scrolls = 0
+    max_scrolls = 50
+
+    while scrolls < max_scrolls:
+        driver.execute_script("window.scrollBy(0, 1000)")
+        time.sleep(0.8)
+        scrolls += 1
+
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+
+        last_height = new_height
+        if scrolls % 10 == 0:
+            print(f"   ✓ {scrolls} scrolls... loading reviews")
+
+    print(f"   ✓ Completed {scrolls} scrolls\n")
 
     print("✂️  Extracting review text...")
     review_elements = driver.find_elements(By.XPATH, "//*[@data-review-id]")
@@ -68,7 +86,7 @@ try:
     print(f"\n✓ Found {len(review_elements)} review elements\n")
 
     # Parse reviews
-    for i, element in enumerate(review_elements[:500]):  # Limit to 500 for speed
+    for i, element in enumerate(review_elements[:1000]):  # Limit to 1000
         try:
             text = element.text
 
