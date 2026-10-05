@@ -147,7 +147,7 @@ def scrape_gmaps_link(url: str) -> list:
                                     "review_date": datetime.now().isoformat(),
                                     "days_since_review": 0,
                                     "reviewer_review_count": 1,
-                                    "reviewer_avg_rating": float(review_data.get('reviewRating', {}).get('ratingValue', 5)),
+                                    "reviewer_avg_rating": float(review_data.get('reviewRating', {}).get('ratingValue', 5) or 5),
                                 }
                             }
                             if review['text']:
@@ -183,7 +183,7 @@ def scrape_gmaps_link(url: str) -> list:
                             "review_date": datetime.now().isoformat(),
                             "days_since_review": 0,
                             "reviewer_review_count": 1,
-                            "reviewer_avg_rating": float(rating),
+                            "reviewer_avg_rating": float(rating or 5),
                         }
                     }
                     reviews.append(review)
@@ -276,7 +276,7 @@ def parse_manual_reviews(text: str) -> list:
                     "review_date": review_date.isoformat(),
                     "days_since_review": parsed.get('days_since', 0),
                     "reviewer_review_count": 1,
-                    "reviewer_avg_rating": float(rating),
+                    "reviewer_avg_rating": float(rating or 5),
                 }
             })
 
