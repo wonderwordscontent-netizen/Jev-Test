@@ -23,7 +23,7 @@ print()
 # Get link from user
 link = input("Paste your Google Maps listing link: ").strip()
 
-if not link or ("google.com/maps" not in link and "maps.google.com" not in link):
+if not link or ("maps" not in link.lower()):
     print("❌ Invalid link. Must be a Google Maps URL.")
     exit(1)
 
