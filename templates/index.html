@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeSafe Review Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+            font-size: 0.95em;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .results {
+            display: none;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .review-card.fake {
+            border-left-color: #e74c3c;
+            background: #fee;
+        }
+
+        .review-card.authentic {
+            border-left-color: #27ae60;
+            background: #efe;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-rating {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .suspicion-meter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .meter-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+            border-radius: 4px;
+        }
+
+        .review-text {
+            color: #555;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .review-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .badge-fake {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge-authentic {
+            background: #27ae60;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #888;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 TypeSafe Review Analyzer</h1>
+            <p>Detect fake reviews using AI-powered analysis</p>
+        </div>
+
+        <div class="content">
+            <div class="error" id="error"></div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="reviews">📝 Paste Reviews</label>
+                    <textarea id="reviews" placeholder="Paste reviews here (one per line)&#10;Example: 5 stars · Great service! · John D. · 2 days ago&#10;Or just: 5 Great service!"></textarea>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="analyzeReviews()">
+                            Analyze Reviews
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="loadDemo()">
+                            Demo Data
+                        </button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="useApi" onchange="updateApiStatus()">
+                        <label for="useApi">Use Real TypeSafe API (requires BEATAPI_API_KEY)</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>📊 Instructions</label>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; line-height: 1.6; font-size: 0.95em; color: #555;">
+                        <p><strong>Format 1 (Recommended):</strong></p>
+                        <p style="margin: 8px 0; font-family: monospace; font-size: 0.9em;">
+                            5 stars · Great service! · John D. · 2 days ago
+                        </p>
+
+                        <p style="margin-top: 15px; margin-bottom: 8px;"><strong>Format 2 (Simple):</strong></p>
+                        <p style="margin: 8px 0; font-family: monospace; font-size: 0.9em;">
+                            5 Great service!
+                        </p>
+
+                        <p style="margin-top: 15px; margin-bottom: 8px;"><strong>Try the Demo:</strong></p>
+                        <p style="margin: 8px 0;">Click "Demo Data" to see example analysis</p>
+
+                        <p style="margin-top: 15px; margin-bottom: 8px;"><strong>What You'll See:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Suspicion score (0-100)</li>
+                            <li>Analysis details (language, spam, etc.)</li>
+                            <li>Fake review flags</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing reviews...</p>
+            </div>
+
+            <div class="results" id="results">
+                <h2>📊 Analysis Results</h2>
+
+                <div class="summary" id="summary"></div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('all')">All Reviews</button>
+                    <button class="tab-btn" onclick="switchTab('fake')">🚩 Fake Only</button>
+                    <button class="tab-btn" onclick="switchTab('authentic')">✅ Authentic Only</button>
+                </div>
+
+                <div class="tab-content active" id="tab-all">
+                    <div class="review-list" id="review-list-all"></div>
+                </div>
+
+                <div class="tab-content" id="tab-fake">
+                    <div class="review-list" id="review-list-fake"></div>
+                </div>
+
+                <div class="tab-content" id="tab-authentic">
+                    <div class="review-list" id="review-list-authentic"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReport = null;
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = message;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }
+
+        function updateApiStatus() {
+            const useApi = document.getElementById('useApi').checked;
+            const msg = useApi ? 'Real TypeSafe API enabled (mock analysis will be used if API key not set)' : 'Using mock analysis';
+            console.log(msg);
+        }
+
+        async function analyzeReviews() {
+            const reviews = document.getElementById('reviews').value.trim();
+            const useApi = document.getElementById('useApi').checked;
+
+            if (!reviews) {
+                showError('Please paste some reviews first');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').classList.remove('show');
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source: 'paste',
+                        content: reviews,
+                        use_api: useApi
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+
+                currentReport = data.report;
+                displayResults();
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function loadDemo() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('reviews').value = '';
+
+            try {
+                const response = await fetch('/api/demo');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error('Demo loading failed');
+                }
+
+                currentReport = data.report;
+                displayResults();
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayResults() {
+            if (!currentReport) return;
+
+            const summary = currentReport.summary;
+            const results = currentReport.detailed_results;
+
+            // Summary cards
+            const summaryHtml = `
+                <div class="stat-card">
+                    <div class="label">Total Reviews</div>
+                    <div class="value">${summary.total_reviews_analyzed}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Likely Fake</div>
+                    <div class="value" style="color: #e74c3c;">${summary.likely_fake_reviews}</div>
+                    <div class="label">(${summary.likely_fake_percentage}%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Suspicious</div>
+                    <div class="value" style="color: #f39c12;">${summary.suspicious_reviews}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Confidence</div>
+                    <div class="value">${summary.average_confidence}</div>
+                </div>
+            `;
+            document.getElementById('summary').innerHTML = summaryHtml;
+
+            // Review cards
+            const allCards = results.map(createReviewCard).join('');
+            const fakeCards = results.filter(r => r.is_likely_fake).map(createReviewCard).join('');
+            const authenticCards = results.filter(r => !r.is_likely_fake).map(createReviewCard).join('');
+
+            document.getElementById('review-list-all').innerHTML = allCards || '<p>No reviews found</p>';
+            document.getElementById('review-list-fake').innerHTML = fakeCards || '<p>No fake reviews detected</p>';
+            document.getElementById('review-list-authentic').innerHTML = authenticCards || '<p>No authentic reviews found</p>';
+
+            document.getElementById('results').classList.add('show');
+        }
+
+        function createReviewCard(review) {
+            const isFake = review.is_likely_fake;
+            const cardClass = isFake ? 'fake' : 'authentic';
+            const badge = isFake ? '<span class="badge badge-fake">🚩 LIKELY FAKE</span>' : '<span class="badge badge-authentic">✅ AUTHENTIC</span>';
+            const ratingStars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+            return `
+                <div class="review-card ${cardClass}">
+                    <div class="review-header">
+                        <span class="review-rating">${ratingStars}</span>
+                        <strong>${review.suspicion_score}/100</strong>
+                    </div>
+                    <p class="review-text">"${review.text}"</p>
+                    <div class="suspicion-meter">
+                        <div class="meter-bar">
+                            <div class="meter-fill" style="width: ${review.suspicion_score}%"></div>
+                        </div>
+                        <small>Score: ${review.suspicion_score}</small>
+                    </div>
+                    ${badge}
+                    <div class="review-meta">
+                        <span>📅 ${review.days_since_review} days ago</span>
+                        <span>Confidence: ${(review.confidence * 100).toFixed(0)}%</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchTab(tab) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        // Welcome message
+        console.log('TypeSafe Review Analyzer loaded. Paste reviews to analyze!');
+    </script>
+</body>
+</html>
